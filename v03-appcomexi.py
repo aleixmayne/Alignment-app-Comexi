@@ -937,9 +937,9 @@ def build_steps(results: list) -> list:
 # ─────────────────────────────────────────────
 #  MEDIA PATHS
 # ─────────────────────────────────────────────
-TEST_VIDEO  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\video01.mp4"
-INTRO_VIDEO = r"C:\Users\mayne\Documents\1r GTIAE\comexi\animation-screen2.mkv"
-HOME_IMAGE  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\decoracioweb03.jpeg"
+TEST_VIDEO  = "assets/video01.mp4"
+INTRO_VIDEO = "assets/animation-screen2.mkv"
+HOME_IMAGE  = "assets/decoracioweb03.jpeg"
 
 
 # ─────────────────────────────────────────────
