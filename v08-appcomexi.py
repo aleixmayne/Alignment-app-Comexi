@@ -461,31 +461,7 @@ div[data-baseweb="popover"] [aria-selected="true"] { background: rgba(227,0,27,0
 .cx-error-title { font-family: 'Outfit', sans-serif; font-size: 0.9rem; font-weight: 600; color: var(--red); margin-bottom: 0.15rem; }
 .cx-error-sub   { font-family: 'Outfit', sans-serif; font-size: 0.8rem; font-weight: 300; color: var(--muted2); line-height: 1.5; }
 
-/* ══════════════════════════
-   SVG SCHEMATIC BOX
-══════════════════════════ */
-.cx-schematic-box {
-    background: var(--bg2); border: 1px solid var(--border); border-radius: 6px;
-    min-height: 300px; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    position: relative; overflow: hidden; margin-bottom: 1.6rem; padding: 2rem;
-}
-.cx-schematic-box::before {
-    content: ''; position: absolute; inset: 0;
-    background-image: linear-gradient(var(--border) 1px, transparent 1px),
-        linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 40px 40px; opacity: 0.35;
-}
-.cx-sch-corner {
-    position: absolute; top: 14px; left: 18px; z-index: 2;
-    font-family: 'DM Mono', monospace; font-size: 0.65rem;
-    color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase;
-}
-.cx-sch-corner-r {
-    position: absolute; top: 14px; right: 18px; z-index: 2;
-    font-family: 'DM Mono', monospace; font-size: 0.65rem;
-    color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase;
-}
+
 
 /* ══════════════════════════
    BAR STATUS CARDS
@@ -937,9 +913,18 @@ def build_steps(results: list) -> list:
 # ─────────────────────────────────────────────
 #  MEDIA PATHS
 # ─────────────────────────────────────────────
-TEST_VIDEO  = "assets/video01.mp4"
-INTRO_VIDEO = "assets/animation-screen2.mkv"
-HOME_IMAGE  = "assets/decoracioweb03.jpeg"
+INTRO_VIDEO = r"C:\Users\mayne\Documents\1r GTIAE\comexi\animation-screen2.mkv"
+HOME_IMAGE  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\decoracioweb03.jpeg"
+
+# ── Per-move instruction videos (Screen 3 animation box) ──────────────────────
+# Each of the 4 possible movements has its own video.
+# Once you have the files, paste the full path in the corresponding variable.
+# If a path is empty ("") or the file doesn't exist, nothing is shown in the video slot.
+# Add the paths once the video files are ready and they will appear automatically.
+VIDEO_YAW_CW    = r"C:\Users\mayne\Documents\1r GTIAE\comexi\yaw-clockwise.mkv"   # ← TODO: paste path to YAW   Clockwise video here
+VIDEO_YAW_CCW   = r"C:\Users\mayne\Documents\1r GTIAE\comexi\yaw-counterclockwise.mkv"   # ← TODO: paste path to YAW   Counter-Clockwise video here
+VIDEO_STITCH_CW  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\stitch-clockwise.mkv"  # ← TODO: paste path to STITCH Clockwise video here
+VIDEO_STITCH_CCW = r"C:\Users\mayne\Documents\1r GTIAE\comexi\stitch-counterclockwise.mkv"  # ← TODO: paste path to STITCH Counter-Clockwise video here
 
 
 # ─────────────────────────────────────────────
@@ -979,91 +964,6 @@ for k, v in {
     if k not in st.session_state:
         st.session_state[k] = v
 
-
-# ─────────────────────────────────────────────
-#  SVG PRINTHEAD SCHEMATIC
-# ─────────────────────────────────────────────
-def build_schematic_svg(active_head: int, done_heads: list, bar_color: str, phase: str) -> str:
-    W, H     = 640, 220
-    n        = 8
-    pad_x    = 60
-    head_w   = 44
-    head_h   = 60
-    spacing  = (W - 2 * pad_x - head_w) / (n - 1)
-    rail_y   = H // 2
-    rail_top = rail_y - head_h // 2 - 18
-    rail_bot = rail_y + head_h // 2 + 18
-
-    svg = (
-        f'<svg viewBox="0 0 {W} {H}" xmlns="http://www.w3.org/2000/svg" '
-        f'style="width:100%;max-width:600px;z-index:2;position:relative;">'
-    )
-    svg += (
-        f'<rect x="{pad_x - 10}" y="{rail_top}" '
-        f'width="{W - 2*pad_x + 20}" height="{rail_bot - rail_top}" '
-        f'rx="8" fill="#EBEBED" stroke="{bar_color}" stroke-width="1.5" opacity="0.8"/>'
-    )
-    svg += (
-        f'<text x="{W//2}" y="{rail_top - 8}" text-anchor="middle" '
-        f'font-family="DM Mono,monospace" font-size="9" fill="{bar_color}" '
-        f'letter-spacing="3" opacity="0.7">PRINTHEAD CARRIER RAIL</text>'
-    )
-    screw_label = "SCREW A — YAW" if phase == "yaw" else "SCREW B — STITCH"
-    svg += (
-        f'<text x="{W//2}" y="{rail_bot + 22}" text-anchor="middle" '
-        f'font-family="DM Mono,monospace" font-size="9" fill="#6E6E78" letter-spacing="2">'
-        f'{screw_label}</text>'
-    )
-    for i in range(n):
-        hnum      = i + 1
-        cx        = pad_x + i * spacing + head_w // 2
-        hy        = rail_y - head_h // 2
-        is_active = (hnum == active_head)
-        is_done   = (hnum in done_heads)
-        if is_active:
-            fill, stroke, opacity, sw, tc = '#E3001B', '#E3001B', '1', '2', 'white'
-        elif is_done:
-            fill, stroke, opacity, sw, tc = 'rgba(0,168,98,0.12)', '#00A862', '0.9', '1.5', '#00A862'
-        else:
-            fill, stroke, opacity, sw, tc = '#FFFFFF', '#C4C4C8', '1', '1', '#9090A0'
-        svg += (
-            f'<rect x="{cx - head_w//2}" y="{hy}" width="{head_w}" height="{head_h}" '
-            f'rx="5" fill="{fill}" stroke="{stroke}" stroke-width="{sw}" opacity="{opacity}"/>'
-        )
-        nozzle_y = hy + head_h - 10
-        for nd in range(4):
-            nx = cx - 13 + nd * 9
-            nc = stroke if (is_active or is_done) else '#D8D8DC'
-            svg += f'<circle cx="{nx}" cy="{nozzle_y}" r="2.5" fill="{nc}" opacity="0.9"/>'
-        if is_active:
-            svg += (
-                f'<rect x="{cx - head_w//2 - 5}" y="{hy - 5}" '
-                f'width="{head_w + 10}" height="{head_h + 10}" '
-                f'rx="8" fill="none" stroke="#E3001B" stroke-width="1" opacity="0.3" '
-                f'stroke-dasharray="4 3"/>'
-            )
-        if is_done:
-            svg += (
-                f'<text x="{cx}" y="{hy + head_h//2 + 5}" text-anchor="middle" '
-                f'font-size="16" fill="#00C97A">✓</text>'
-            )
-        else:
-            svg += (
-                f'<text x="{cx}" y="{hy + head_h//2 + 5}" text-anchor="middle" '
-                f'font-family="DM Mono,monospace" font-size="14" font-weight="500" fill="{tc}">'
-                f'{hnum}</text>'
-            )
-        svg += (
-            f'<text x="{cx}" y="{rail_bot + 38}" text-anchor="middle" '
-            f'font-family="DM Mono,monospace" font-size="9" fill="{tc}" letter-spacing="1">'
-            f'H{hnum}</text>'
-        )
-        svg += (
-            f'<line x1="{cx}" y1="{rail_bot}" x2="{cx}" y2="{rail_bot + 12}" '
-            f'stroke="{stroke}" stroke-width="1" opacity="0.4"/>'
-        )
-    svg += '</svg>'
-    return svg
 
 
 # ─────────────────────────────────────────────
@@ -1136,12 +1036,12 @@ def render_autoplay_video(path: str, height: int = 340,
     """
     if not path or not os.path.exists(path):
         st.markdown(
-            f'<div class="cx-schematic-box" style="min-height:220px;">'
-            f'<div style="position:relative;z-index:2;text-align:center;">'
+            f'<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;'
+            f'min-height:220px;display:flex;align-items:center;justify-content:center;margin-bottom:1.6rem;">'
             f'<div style="font-family:DM Mono,monospace;font-size:0.65rem;'
-            f'color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;">'
+            f'color:var(--muted);letter-spacing:0.2em;text-transform:uppercase;text-align:center;">'
             f'VIDEO NOT FOUND &mdash; <code style="font-size:0.62rem;">{path}</code>'
-            f'</div></div></div>',
+            f'</div></div>',
             unsafe_allow_html=True
         )
         return
@@ -1157,7 +1057,7 @@ def render_autoplay_video(path: str, height: int = 340,
         html = (
             "<!DOCTYPE html><html><head><style>"
             "*{margin:0;padding:0;box-sizing:border-box;}"
-            "html,body{background:#000;width:100%;height:100%;overflow:hidden;}"
+            "html,body{background:#D8D8D8;width:100%;height:100%;overflow:hidden;}"
             "video{position:fixed;top:0;left:0;width:100%;height:100%;"
             "object-fit:cover;display:block;}"
             "</style></head><body>"
@@ -1286,7 +1186,7 @@ if st.session_state.screen == 'intro_video':
 
     # ── Full-bleed video — sticks to top, sized to leave room for button ──
     st.markdown(
-        '<div style="width:100vw;position:relative;left:50%;margin-left:-50vw;overflow:hidden;">',
+        '<div style="width:100vw;position:relative;left:50%;margin-left:-50vw;overflow:hidden;margin-top:-1.2rem;background:#D8D8D8;">',
         unsafe_allow_html=True
     )
     render_autoplay_video(INTRO_VIDEO, full_bleed=True)
@@ -1297,28 +1197,6 @@ if st.session_state.screen == 'intro_video':
         '<div style="width:100vw;position:relative;left:50%;margin-left:-50vw;">',
         unsafe_allow_html=True
     )
-    st.markdown("""<style>
-    .cx-skip-row > div[data-testid="stButton"] > button {
-        width: 100% !important;
-        height: 64px !important;
-        background: #1A1A1E !important;
-        color: #ffffff !important;
-        font-family: 'DM Mono', monospace !important;
-        font-size: 0.82rem !important;
-        font-weight: 500 !important;
-        letter-spacing: 0.32em !important;
-        text-transform: uppercase !important;
-        border: none !important;
-        border-radius: 0 !important;
-        border-top: 1px solid rgba(255,255,255,0.12) !important;
-        box-shadow: none !important;
-        cursor: pointer !important;
-        transition: background 0.15s !important;
-    }
-    .cx-skip-row > div[data-testid="stButton"] > button:hover {
-        background: #2a2a2e !important;
-    }
-    </style>""", unsafe_allow_html=True)
     st.markdown('<div class="cx-skip-row">', unsafe_allow_html=True)
     if st.button("SKIP  ▶▶", key="skip_btn"):
         st.session_state.screen        = 'steps'
@@ -1333,6 +1211,19 @@ if st.session_state.screen == 'intro_video':
     st.markdown(
         '<style>'
         '.stApp,.stApp>div,[class*="css"],html,body{background:#D8D8D8 !important;}'
+        '.block-container{padding-top:0 !important;}'
+        '[data-testid="stMainBlockContainer"]{padding-top:0 !important;}'
+        '.stButton>button{'
+        'background:#1A1A1E !important;color:#fff !important;'
+        'font-family:"DM Mono",monospace !important;font-size:0.82rem !important;'
+        'font-weight:500 !important;letter-spacing:0.32em !important;'
+        'text-transform:uppercase !important;'
+        'height:64px !important;'
+        'width:calc(100% - 5rem) !important;'
+        'margin:0.6rem 2.5rem !important;'
+        'border:none !important;border-radius:6px !important;'
+        'box-shadow:none !important;}'
+        '.stButton>button:hover{background:#2a2a2e !important;color:#fff !important;}'
         '</style>',
         unsafe_allow_html=True
     )
@@ -1342,6 +1233,37 @@ elif st.session_state.screen == 'steps':
         unsafe_allow_html=True
     )
 # Screen 1 keeps --bg (#F5F5F7) which is already the default
+
+# ── RE-WATCH MODE: full-bleed, rendered before columns ──
+if st.session_state.screen == 'steps' and st.session_state.rewatch_video:
+    st.markdown(
+        '<div style="width:100vw;position:relative;left:50%;margin-left:-50vw;'
+        'overflow:hidden;margin-top:-1.2rem;background:#D8D8D8;">',
+        unsafe_allow_html=True
+    )
+    render_autoplay_video(INTRO_VIDEO, full_bleed=True)
+    st.markdown('</div>', unsafe_allow_html=True)
+    # Resume button — same style as SKIP
+    st.markdown(
+        '<style>'
+        '.stButton>button{'
+        'background:#1A1A1E !important;color:#fff !important;'
+        'font-family:"DM Mono",monospace !important;font-size:0.82rem !important;'
+        'font-weight:500 !important;letter-spacing:0.32em !important;'
+        'text-transform:uppercase !important;'
+        'height:64px !important;'
+        'width:calc(100% - 5rem) !important;'
+        'margin:0.6rem 2.5rem !important;'
+        'border:none !important;border-radius:6px !important;'
+        'box-shadow:none !important;}'
+        '.stButton>button:hover{background:#2a2a2e !important;color:#fff !important;}'
+        '</style>',
+        unsafe_allow_html=True
+    )
+    if st.button('&#9654; Resume Steps', key='resume_steps_btn'):
+        st.session_state.rewatch_video = False
+        st.rerun()
+    st.stop()
 
 _l, col_body, _r = st.columns([1, 16, 1])
 
@@ -1400,6 +1322,42 @@ with col_body:
                 unsafe_allow_html=True
             )
 
+        # Bar selector cards — select which bar to work on first
+        st.markdown(
+            '<div style="font-family:\'DM Mono\',monospace;font-size:0.65rem;color:var(--muted);'
+            'letter-spacing:0.22em;text-transform:uppercase;margin-top:1.8rem;margin-bottom:0.8rem;">'
+            'Select color bar to work on</div>',
+            unsafe_allow_html=True
+        )
+        bar_status = st.session_state.bar_status
+        card_cols  = st.columns(4)
+        for i, b in enumerate(BARS):
+            with card_cols[i]:
+                bc     = BAR_COLORS[b]
+                st_v   = bar_status[b]
+                is_sel = (b == st.session_state.selected_bar)
+                if st_v == 'unknown':        card_cls, status_lbl, sc = 'unknown',  'UNKNOWN',      ''
+                elif st_v == 'needs_yaw':    card_cls, status_lbl, sc = 'active',   'NEEDS YAW',    'red'
+                elif st_v == 'needs_stitch': card_cls, status_lbl, sc = 'yaw-done', 'NEEDS STITCH', 'yellow'
+                else:                        card_cls, status_lbl, sc = 'all-done', 'ALIGNED',      'green'
+                sel_indicator = (
+                    "<div style='font-family:DM Mono,monospace;font-size:0.55rem;"
+                    "color:var(--muted);margin-top:0.3rem;letter-spacing:0.1em;'>SELECTED ▲</div>"
+                ) if is_sel and st.session_state.get('bar_explicitly_selected', False) else ""
+                st.markdown(
+                    f'<div class="cx-bar-card {card_cls}">'
+                    f'<div class="cx-bar-card-name" style="color:{bc};">{b.upper()}</div>'
+                    f'<div class="cx-bar-card-status {sc}">{status_lbl}</div>'
+                    f'{sel_indicator}'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+                if st.button("Select", key=f"sel_{b}", use_container_width=True):
+                    st.session_state.selected_bar = b
+                    st.session_state.bar_explicitly_selected = True
+                    st.rerun()
+
+        st.markdown('<div style="margin-top:1.4rem;"></div>', unsafe_allow_html=True)
         if st.button("Process CSV  &#8594;", use_container_width=True):
             if uploaded_file is None:
                 st.session_state.error_msg = (
@@ -1441,65 +1399,12 @@ with col_body:
                 st.session_state.screen = 'intro_video'
                 st.rerun()
 
-        # Bar selector cards — select which bar to work on first
-        st.markdown(
-            '<div style="font-family:\'DM Mono\',monospace;font-size:0.65rem;color:var(--muted);'
-            'letter-spacing:0.22em;text-transform:uppercase;margin-top:1.8rem;margin-bottom:0.8rem;">'
-            'Select color bar to work on</div>',
-            unsafe_allow_html=True
-        )
-        bar_status = st.session_state.bar_status
-        card_cols  = st.columns(4)
-        for i, b in enumerate(BARS):
-            with card_cols[i]:
-                bc     = BAR_COLORS[b]
-                st_v   = bar_status[b]
-                is_sel = (b == st.session_state.selected_bar)
-                if st_v == 'unknown':        card_cls, status_lbl, sc = 'unknown',  'UNKNOWN',      ''
-                elif st_v == 'needs_yaw':    card_cls, status_lbl, sc = 'active',   'NEEDS YAW',    'red'
-                elif st_v == 'needs_stitch': card_cls, status_lbl, sc = 'yaw-done', 'NEEDS STITCH', 'yellow'
-                else:                        card_cls, status_lbl, sc = 'all-done', 'ALIGNED',      'green'
-                sel_indicator = (
-                    "<div style='font-family:DM Mono,monospace;font-size:0.55rem;"
-                    "color:var(--muted);margin-top:0.3rem;letter-spacing:0.1em;'>SELECTED ▲</div>"
-                ) if is_sel and st.session_state.get('bar_explicitly_selected', False) else ""
-                st.markdown(
-                    f'<div class="cx-bar-card {card_cls}">'
-                    f'<div class="cx-bar-card-name" style="color:{bc};">{b.upper()}</div>'
-                    f'<div class="cx-bar-card-status {sc}">{status_lbl}</div>'
-                    f'{sel_indicator}'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-                if st.button("Select", key=f"sel_{b}", use_container_width=True):
-                    st.session_state.selected_bar = b
-                    st.session_state.bar_explicitly_selected = True
-                    st.rerun()
-
     # ══════════════════════════════════════════════════════════
     #  SCREEN 3 — STEPS
     #  Bar analysis summary at top, then step-by-step walkthrough.
     #  Re-watch button freezes the UI and shows intro video inline.
     # ══════════════════════════════════════════════════════════
     elif st.session_state.screen == 'steps':
-
-        # ── RE-WATCH MODE: video shown, everything else frozen ──
-        if st.session_state.rewatch_video:
-            st.markdown(
-                '<div class="cx-rewatch-banner">'
-                '&#9654;&nbsp;&nbsp; Alignment overview — step flow is paused'
-                '</div>',
-                unsafe_allow_html=True
-            )
-            # Autoplay, no controls, no loop — no auto-advance (user resumes manually)
-            render_autoplay_video(INTRO_VIDEO, height=320)
-            st.markdown('<div class="cx-ghost">', unsafe_allow_html=True)
-            resume_clicked = st.button("&#9654; Resume Steps", use_container_width=True, key="resume_steps_btn")
-            st.markdown('</div>', unsafe_allow_html=True)
-            if resume_clicked:
-                st.session_state.rewatch_video = False
-                st.rerun()
-            st.stop()
 
         # ── CHOOSE NEXT BAR ──
         if st.session_state.show_next_bar:
@@ -1644,33 +1549,38 @@ with col_body:
 
         # ── FINISHED ──
         elif st.session_state.finished:
-            st.markdown("""
-            <div class="cx-finish">
-                <div class="cx-finish-icon">&#9711;</div>
-                <div class="cx-finish-title" style="color:var(--green);">Printer Aligned</div>
-                <div class="cx-finish-sub">All heads on all 4 colour bars are within tolerance.<br>
-                The system is ready for production.</div>
-            </div>""", unsafe_allow_html=True)
+            # Compact header banner
+            st.markdown(
+                '<div class="cx-finish" style="padding:2rem 2.5rem 1.8rem;">'
+                '<div class="cx-finish-icon" style="font-size:1.8rem;margin-bottom:0.6rem;">&#10003;</div>'
+                '<div class="cx-finish-title" style="color:var(--green);font-size:1.6rem;margin-bottom:0.4rem;">Printer Aligned</div>'
+                '<div class="cx-finish-sub">All heads on all 4 colour bars are within tolerance. '
+                'The system is ready for production.</div>'
+                '</div>',
+                unsafe_allow_html=True
+            )
 
-            if st.button("&#8617;  New Cycle", use_container_width=True):
-                for k, v in {
-                    'results': None, 'step': 0, 'running': False,
-                    'finished': False, 'printer_fixed': False,
-                    'show_next_bar': False, 'screen': 'standby',
-                    'rewatch_video': False,
-                    'yaw_done_bars': [], 'stitch_done_bars': [],
-                    'audit_log': [],
-                    'move_log': {'cyan': [], 'magenta': [], 'yellow': [], 'black': []},
-                    'bar_status': {'cyan': 'unknown', 'magenta': 'unknown', 'yellow': 'unknown', 'black': 'unknown'},
-                    'all_bar_results': {},
-                }.items():
-                    st.session_state[k] = v
-                # Clear per-colour bisection state so next upload starts fresh
-                for _b in BARS:
-                    st.session_state[f'algo_state_{_b}'] = None
-                    st.session_state[f'algo_moves_{_b}'] = []
-                st.session_state.bar_explicitly_selected = False
-                st.rerun()
+            # 4 green bar cards
+            st.markdown(
+                '<div style="font-family:\'DM Mono\',monospace;font-size:0.65rem;color:var(--muted);'
+                'letter-spacing:0.22em;text-transform:uppercase;margin-top:1.6rem;margin-bottom:0.8rem;">'
+                'Colour bar status</div>',
+                unsafe_allow_html=True
+            )
+            finish_cols = st.columns(4)
+            for i, b in enumerate(BARS):
+                bc = BAR_COLORS[b]
+                with finish_cols[i]:
+                    st.markdown(
+                        f'<div class="cx-bar-card all-done">'
+                        f'<div class="cx-bar-card-name" style="color:{bc};">{b.upper()}</div>'
+                        f'<div class="cx-bar-card-status green">&#10003;&nbsp; ALIGNED</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+            # Move log
+            render_move_log()
 
         # ── ACTIVE STEPS ──
         elif st.session_state.running and st.session_state.results:
@@ -1692,7 +1602,7 @@ with col_body:
             render_bar_summary(phase=phase)
 
             # ── RE-WATCH INTRO BUTTON — top right, ghost style ──
-            _, rw_btn_col = st.columns([9, 3])
+            _, rw_btn_col = st.columns([7, 5])
             with rw_btn_col:
                 st.markdown('<div class="cx-ghost">', unsafe_allow_html=True)
                 if st.button("&#9654; Rewatch animation", use_container_width=True, key="rewatch_btn"):
@@ -1701,19 +1611,31 @@ with col_body:
                 st.markdown('</div>', unsafe_allow_html=True)
 
             # ── VIDEO / ANIMATION BOX ──
-            anim_corner = f"HEAD {head_num} &middot; {'YAW' if phase == 'yaw' else 'STITCH'}"
-            if TEST_VIDEO and os.path.exists(TEST_VIDEO):
-                with open(TEST_VIDEO, 'rb') as _vf:
-                    st.video(_vf.read())
-            else:
-                done_so_far = list(range(1, cur_pos + 1))
-                svg_html    = build_schematic_svg(head_num, done_so_far, display_bar_col, phase)
+            # Resolve which direction this step requires (needed before rendering)
+            _move_dir = current['yaw_dir'] if phase == 'yaw' else current['stitch_dir']
+
+            # Map (phase, direction) → video path constant
+            # To add a video: paste its path in the matching constant at the top of the file.
+            _video_map = {
+                ('yaw',    'CW'):  VIDEO_YAW_CW,
+                ('yaw',    'CCW'): VIDEO_YAW_CCW,
+                ('stitch', 'CW'):  VIDEO_STITCH_CW,
+                ('stitch', 'CCW'): VIDEO_STITCH_CCW,
+            }
+            _step_video = _video_map.get((phase, _move_dir), "")
+
+            if _step_video and os.path.exists(_step_video):
+                _ext  = os.path.splitext(_step_video)[1].lower()
+                _mime = {".mp4": "video/mp4", ".webm": "video/webm", ".mkv": "video/mp4"}.get(_ext, "video/mp4")
+                with open(_step_video, "rb") as _vf:
+                    _b64 = base64.b64encode(_vf.read()).decode()
                 st.markdown(
-                    f'<div class="cx-schematic-box">'
-                    f'<span class="cx-sch-corner">{anim_corner}</span>'
-                    f'<span class="cx-sch-corner-r">{display_bar_name}</span>'
-                    f'{svg_html}'
-                    f'</div>',
+                    f'<div style="width:100%;height:752px;border-radius:6px;overflow:hidden;'
+                    f'border:1px solid var(--border);margin-bottom:1.6rem;background:#D8D8D8;">'
+                    f'<video autoplay muted loop playsinline '
+                    f'style="width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;">'
+                    f'<source src="data:{_mime};base64,{_b64}" type="{_mime}">'
+                    f'</video></div>',
                     unsafe_allow_html=True
                 )
 
