@@ -913,18 +913,18 @@ def build_steps(results: list) -> list:
 # ─────────────────────────────────────────────
 #  MEDIA PATHS
 # ─────────────────────────────────────────────
-INTRO_VIDEO = r"C:\Users\mayne\Documents\1r GTIAE\comexi\animation-screen2.mkv"
-HOME_IMAGE  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\decoracioweb03.jpeg"
+INTRO_VIDEO      = "assets/animation-screen2-p4.mp4"
+HOME_IMAGE       = "assets/decoracioweb03.jpeg"
 
 # ── Per-move instruction videos (Screen 3 animation box) ──────────────────────
 # Each of the 4 possible movements has its own video.
 # Once you have the files, paste the full path in the corresponding variable.
 # If a path is empty ("") or the file doesn't exist, nothing is shown in the video slot.
 # Add the paths once the video files are ready and they will appear automatically.
-VIDEO_YAW_CW    = r"C:\Users\mayne\Documents\1r GTIAE\comexi\yaw-clockwise.mkv"   # ← TODO: paste path to YAW   Clockwise video here
-VIDEO_YAW_CCW   = r"C:\Users\mayne\Documents\1r GTIAE\comexi\yaw-counterclockwise.mkv"   # ← TODO: paste path to YAW   Counter-Clockwise video here
-VIDEO_STITCH_CW  = r"C:\Users\mayne\Documents\1r GTIAE\comexi\stitch-clockwise.mkv"  # ← TODO: paste path to STITCH Clockwise video here
-VIDEO_STITCH_CCW = r"C:\Users\mayne\Documents\1r GTIAE\comexi\stitch-counterclockwise.mkv"  # ← TODO: paste path to STITCH Counter-Clockwise video here
+VIDEO_YAW_CW     = "assets/yaw-clockwise-p4.mp4"   # ← TODO: paste path to YAW   Clockwise video here
+VIDEO_YAW_CCW    = "assets/yaw-counterclockwise-p4.mp4"   # ← TODO: paste path to YAW   Counter-Clockwise video here
+VIDEO_STITCH_CW  = "assets/stitch-clockwise-p4.mp4"  # ← TODO: paste path to STITCH Clockwise video here
+VIDEO_STITCH_CCW = "assets/stitch-counterclockwise-p4.mp4"  # ← TODO: paste path to STITCH Counter-Clockwise video here
 
 
 # ─────────────────────────────────────────────
@@ -1630,7 +1630,7 @@ with col_body:
                 with open(_step_video, "rb") as _vf:
                     _b64 = base64.b64encode(_vf.read()).decode()
                 st.markdown(
-                    f'<div style="width:100%;height:752px;border-radius:6px;overflow:hidden;'
+                    f'<div style="width:100%;height:400px;border-radius:6px;overflow:hidden;'
                     f'border:1px solid var(--border);margin-bottom:1.6rem;background:#D8D8D8;">'
                     f'<video autoplay muted loop playsinline '
                     f'style="width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;">'
