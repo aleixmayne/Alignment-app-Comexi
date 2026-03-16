@@ -1768,3 +1768,4 @@ with col_body:
             render_move_log()
 
 st.markdown('</div>', unsafe_allow_html=True)
+dd
