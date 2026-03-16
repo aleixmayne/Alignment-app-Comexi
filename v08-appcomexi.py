@@ -1630,7 +1630,7 @@ with col_body:
                 with open(_step_video, "rb") as _vf:
                     _b64 = base64.b64encode(_vf.read()).decode()
                 st.markdown(
-                    f'<div style="width:100%;height:400px;border-radius:6px;overflow:hidden;'
+                    f'<div style="width:100%;height:752px;border-radius:6px;overflow:hidden;'
                     f'border:1px solid var(--border);margin-bottom:1.6rem;background:#D8D8D8;">'
                     f'<video autoplay muted loop playsinline '
                     f'style="width:100%;height:100%;object-fit:contain;display:block;pointer-events:none;">'
